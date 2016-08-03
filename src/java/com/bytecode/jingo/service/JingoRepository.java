@@ -21,4 +21,5 @@ public interface JingoRepository
     public Jingoers findUser(String userName);
     
     
+    
 }

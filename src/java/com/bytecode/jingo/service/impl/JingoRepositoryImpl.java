@@ -39,8 +39,7 @@ public class JingoRepositoryImpl implements JingoRepository
     public Jingoers findUser(String userName) {
         List<Jingoers> jingoers = manager.createNamedQuery("Jingoers.findByUserName", Jingoers.class).
                 setParameter("userName", userName).
-                setMaxResults(1).
-                getResultList();
+                setMaxResults(1).getResultList();
         return jingoers.isEmpty()? null : jingoers.get(0);
     }
     

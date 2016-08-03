@@ -11,7 +11,6 @@ import java.util.logging.Logger;
 import javax.inject.Inject;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
@@ -115,7 +114,7 @@ public class JingoOperations
             return  service.confirmReg(userID, otp);
         } catch (Exception e)
         {
-            LOGGER.log(Level.SEVERE, String.format("Error at confirming reg for user: %s", 
+            LOGGER.log(Level.SEVERE, String.format("Error at confirming user registration: %s", 
                     userID), e);
             LoginResponse response = new LoginResponse(ServiceResponse.ERROR);
             response.setDescription(ServiceResponse.GENERAL_ERROR_MESSAGE);
