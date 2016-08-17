@@ -6,6 +6,7 @@
 package com.bytecode.jingo.model;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -15,11 +16,13 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -40,6 +43,13 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Jingoers.findByCreationDate", query = "SELECT j FROM Jingoers j WHERE j.creationDate = :creationDate"),
     @NamedQuery(name = "Jingoers.findByStatus", query = "SELECT j FROM Jingoers j WHERE j.status = :status")})
 public class Jingoers implements Serializable {
+
+    @OneToMany(mappedBy = "userId")
+    private Collection<Jingosession> jingosessionCollection;
+    @OneToMany(mappedBy = "fUserId")
+    private Collection<Messages> messagesCollection;
+    @OneToMany(mappedBy = "userId")
+    private Collection<Messages> messagesCollection1;
 
     @Size(max = 45)
     @Column(name = "authCode")
@@ -208,6 +218,33 @@ public class Jingoers implements Serializable {
 
     public void setAuthCode(String authCode) {
         this.authCode = authCode;
+    }
+
+    @XmlTransient
+    public Collection<Jingosession> getJingosessionCollection() {
+        return jingosessionCollection;
+    }
+
+    public void setJingosessionCollection(Collection<Jingosession> jingosessionCollection) {
+        this.jingosessionCollection = jingosessionCollection;
+    }
+
+    @XmlTransient
+    public Collection<Messages> getMessagesCollection() {
+        return messagesCollection;
+    }
+
+    public void setMessagesCollection(Collection<Messages> messagesCollection) {
+        this.messagesCollection = messagesCollection;
+    }
+
+    @XmlTransient
+    public Collection<Messages> getMessagesCollection1() {
+        return messagesCollection1;
+    }
+
+    public void setMessagesCollection1(Collection<Messages> messagesCollection1) {
+        this.messagesCollection1 = messagesCollection1;
     }
     
 }

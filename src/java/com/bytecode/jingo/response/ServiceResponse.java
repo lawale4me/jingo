@@ -10,6 +10,7 @@ public class ServiceResponse
 
     public static final Integer PENDING = 5;
     public static String REGISTRATION_SUCCESSFUL="Enrolment Successful";
+    public static String LOGIN_SUCCESSFUL="Login Successful";
     private int code;
     private String description;
     

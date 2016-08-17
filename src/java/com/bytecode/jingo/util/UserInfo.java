@@ -5,6 +5,8 @@
  */
 package com.bytecode.jingo.util;
 
+import com.bytecode.jingo.model.Jingoers;
+
 /**
  *
  * @author ahmed
@@ -12,6 +14,21 @@ package com.bytecode.jingo.util;
 public class UserInfo {
     private String userName, firstName, lastName, emailAddress, phoneNumber, passwd, uuid, channel;
 
+    public UserInfo(Jingoers user) {
+        this.userName = user.getUserName();
+        this.firstName = user.getFirstName();
+        this.lastName = user.getLastName();
+        this.emailAddress = user.getEmailAddress();
+        this.phoneNumber = user.getPhoneNumber();
+        this.channel = user.getChannel();
+        this.uuid = user.getUuid();
+    }
+
+    public UserInfo() {
+    }
+
+    
+    
     public String getUserName()
     {
         return userName;

@@ -1,30 +1,30 @@
 
 package com.bytecode.jingo.response;
 
+import com.bytecode.jingo.util.MessageInfo;
+import com.bytecode.jingo.util.UserInfo;
+import java.util.List;
+
 /**
  *
  * @author Ahmed
  */
-public class LoginResponse
+public class JingoResponse
 {
 
     public static final Integer PENDING = 5;    
-    public static String ACTIVE="1";
-    public static String INACTIVE="0";
-    public static String LOGOUT_SUCCESSFUL="LOGOUT SUCCESSFUL";
     private int code;
-    private String description, sessionID;
+    private String description;
+    private List<MessageInfo> messages;
+    private UserInfo userInfo;
     
     public static final int SUCCESS = 0;
     public static final int ERROR = 10;
         
-    public static final String LOGIN_SUCCESSFUL="LOGIN Successful";
     public static final String GENERAL_ERROR_MESSAGE = "Request processing error";
-    public static final String GENERAL_SUCCESS_MESSAGE = "Operation Successful";
-    public static final String ERROR_USER_NOT_FOUND = "User not found";    
-    public static final String ERROR_INVALID_DEVICE = "Invalid device";
+    public static final String GENERAL_SUCCESS_MESSAGE = "Operation Successful";        
 
-    public LoginResponse(int code)
+    public JingoResponse(int code)
     {
         this.code = code;        
     }
@@ -51,13 +51,23 @@ public class LoginResponse
         this.code = code;
     }
 
-    public String getSessionID() {
-        return sessionID;
+    public List<MessageInfo> getMessages() {
+        return messages;
     }
 
-    public void setSessionID(String sessionID) {
-        this.sessionID = sessionID;
+    public void setMessages(List<MessageInfo> messages) {
+        this.messages = messages;
     }
+
+    public UserInfo getUserInfo() {
+        return userInfo;
+    }
+
+    public void setUserInfo(UserInfo userInfo) {
+        this.userInfo = userInfo;
+    }
+    
+    
     
     
 }

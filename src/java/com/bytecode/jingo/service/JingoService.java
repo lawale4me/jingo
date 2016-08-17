@@ -1,14 +1,20 @@
 package com.bytecode.jingo.service;
 
 import com.bytecode.jingo.model.Jingoers;
+import com.bytecode.jingo.model.Jingosession;
+import com.bytecode.jingo.model.Messages;
+import com.bytecode.jingo.response.JingoResponse;
 import com.bytecode.jingo.response.LoginResponse;
+import com.bytecode.jingo.response.MessageResponse;
 import com.bytecode.jingo.response.ServiceResponse;
 import com.bytecode.jingo.response.Statuses;
+import com.bytecode.jingo.util.MessageInfo;
 import com.bytecode.jingo.util.UserInfo;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
@@ -106,7 +112,7 @@ public class JingoService
         user.setPasswd(userInfo.getPasswd());
         user.setChannel(userInfo.getChannel());
         user.setUuid(userInfo.getUuid());
-        user.setAuthCode(String.valueOf(new SecureRandom().nextInt()));
+        user.setAuthCode(String.valueOf(Math.abs(new SecureRandom().nextInt())));
         user.setStatus(Statuses.NEW);
         jingoRepo.update(user); 
         
@@ -137,9 +143,18 @@ public class JingoService
             return response;
         }
         
+        
+        
+        Jingosession sess = new Jingosession();
+        sess.setSessionDate(new Date());
+        sess.setSessionID(UUID.randomUUID().toString());
+        sess.setStatus(LoginResponse.ACTIVE);
+        sess.setUserId(user);
+        jingoRepo.create(sess);
+        
         response.setCode(ServiceResponse.SUCCESS);
-        response.setDescription(ServiceResponse.REGISTRATION_SUCCESSFUL);
-
+        response.setDescription(LoginResponse.LOGIN_SUCCESSFUL);
+        response.setSessionID(sess.getSessionID());
         return response; 
     }
 
@@ -171,5 +186,128 @@ public class JingoService
 
         return response; 
     }
+    
+    
+    
+    public LoginResponse getAuthCode(String userID) {
+        LoginResponse response = new LoginResponse(ServiceResponse.ERROR);
+       
+        Jingoers user = jingoRepo.findUser(userID);
+        if (user == null)
+        {
+            response.setDescription("User Does Not Exists");
+            return response;
+        }
+        
+        if(user.getStatus()==Statuses.ACTIVE){
+            response.setDescription("User is Already Active");
+            return response;
+        }                                                            
+        response.setCode(Integer.parseInt(user.getAuthCode()));
+        response.setDescription(ServiceResponse.GENERAL_SUCCESS_MESSAGE);
+        
+
+        return response; 
+    }
+
+    public JingoResponse getDetails(String sessionID) {
+        JingoResponse resp = new JingoResponse(JingoResponse.ERROR);
+        
+        try
+        {
+        Jingosession sess = jingoRepo.findSession(sessionID);
+        if (sess == null || sess.getStatus().equalsIgnoreCase(LoginResponse.INACTIVE))
+        {
+            resp.setDescription("Invalid Session");
+            return resp;
+        }
+        
+        UserInfo userInfo = new UserInfo(sess.getUserId());
+        resp.setUserInfo(userInfo);
+        List<Messages> msgs = jingoRepo.getMessages(sess.getUserId());
+        List<MessageInfo> messages = new MessageInfo().create(msgs,sess.getUserId().getUserName());
+        resp.setMessages(messages);        
+        
+        
+        resp.setDescription(JingoResponse.GENERAL_SUCCESS_MESSAGE);        
+        resp.setCode(JingoResponse.SUCCESS);
+        
+        }
+        catch(Exception e){
+            resp.setDescription(JingoResponse.GENERAL_ERROR_MESSAGE);
+            
+        }
+        
+        return resp;
+    }
+
+    public MessageResponse sendMessage(String sessionID, String message, String toUserName) {
+        
+        MessageResponse resp = new MessageResponse(MessageResponse.ERROR);
+        
+        try
+        {
+        Jingosession sess = jingoRepo.findSession(sessionID);
+        if (sess == null || sess.getStatus().equalsIgnoreCase(LoginResponse.INACTIVE))
+        {
+            resp.setDescription("Invalid Session");
+            return resp;
+        }          
+        
+        Jingoers toUser = jingoRepo.findUser(toUserName);
+        if (toUser == null)
+        {
+            resp.setDescription("User Does Not Exists");
+            return resp;
+        }
+        
+        Messages m = new Messages();
+        m.setFUserId(sess.getUserId());
+        m.setMessage(message);
+        m.setMsgDate(new Date());
+        m.setReadStatus(MessageResponse.PENDING);
+        m.setUserId(toUser);
+        jingoRepo.update(m);
+        
+        resp.setDescription(MessageResponse.MESSAGE_SENT);        
+        resp.setCode(JingoResponse.SUCCESS);
+        
+        }
+        catch(Exception e){
+            resp.setDescription(JingoResponse.GENERAL_ERROR_MESSAGE);            
+        }
+        
+        return resp;
+    }
+
+    public LoginResponse logout(String sessionID) {
+        LoginResponse resp = new LoginResponse(ServiceResponse.ERROR);
+        
+         
+        try
+        {
+        Jingosession sess = jingoRepo.findSession(sessionID);
+        if (sess == null || sess.getStatus().equalsIgnoreCase(LoginResponse.INACTIVE))
+        {
+            resp.setDescription("Invalid Session");
+            return resp;
+        }
+        
+        sess.setStatus(LoginResponse.INACTIVE);
+        jingoRepo.update(sess);
+        
+        resp.setCode(ServiceResponse.SUCCESS);
+        resp.setDescription(LoginResponse.LOGOUT_SUCCESSFUL);
+        resp.setSessionID(null);
+        
+        }
+        catch(Exception e){
+            resp.setDescription(JingoResponse.GENERAL_ERROR_MESSAGE);            
+        }
+        
+        return resp;
+    }
+    
+    
 
 }

@@ -7,6 +7,8 @@ package com.bytecode.jingo.service.impl;
 
 
 import com.bytecode.jingo.model.Jingoers;
+import com.bytecode.jingo.model.Jingosession;
+import com.bytecode.jingo.model.Messages;
 import com.bytecode.jingo.service.JingoRepository;
 import java.util.List;
 import javax.enterprise.context.Dependent;
@@ -41,6 +43,35 @@ public class JingoRepositoryImpl implements JingoRepository
                 setParameter("userName", userName).
                 setMaxResults(1).getResultList();
         return jingoers.isEmpty()? null : jingoers.get(0);
+    }
+
+    @Override
+    public void update(Jingosession sess) {
+        manager.merge(sess);
+    }
+    
+    @Override
+    public void create(Jingosession sess) {
+        manager.persist(sess);
+    }
+
+    @Override
+    public Jingosession findSession(String sessionID) {
+        List<Jingosession> sess = manager.createNamedQuery("Jingosession.findBySessionID", Jingosession.class).
+                setParameter("sessionID", sessionID).
+                setMaxResults(1).getResultList();
+        return sess.isEmpty()? null : sess.get(0);
+    }
+
+    @Override
+    public List<Messages> getMessages(Jingoers user) {
+       return manager.createNamedQuery("Messages.findByUserId", Messages.class).setParameter("userId", user).
+            getResultList();      
+    }
+
+    @Override
+    public void update(Messages m) {
+        manager.merge(m);
     }
     
 

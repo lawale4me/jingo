@@ -7,6 +7,8 @@ package com.bytecode.jingo.service;
 
 
 import com.bytecode.jingo.model.Jingoers;
+import com.bytecode.jingo.model.Jingosession;
+import com.bytecode.jingo.model.Messages;
 import java.util.List;
 
 
@@ -19,6 +21,11 @@ public interface JingoRepository
     public List<Jingoers> getAllJingoers();
     public void update(Jingoers jingoers);        
     public Jingoers findUser(String userName);
+    public void update(Jingosession sess);
+    public Jingosession findSession(String sessionID);
+    public List<Messages> getMessages(Jingoers userId);
+    public void create(Jingosession sess);
+    public void update(Messages m);
     
     
     
